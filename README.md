@@ -18,21 +18,46 @@ Los datos de ejemplo están en `data/` (simulan catálogo/pedidos/políticas).
 - Python 3.10+
 - Cuenta OpenAI y variable de entorno `OPENAI_API_KEY`
 
+### Instalación (recomendada en Windows)
+
+El archivo `requirements.txt` instala solo lo necesario para el **notebook en Cursor/VS Code** y para `run_fase3.py`, sin el metapaquete `jupyter` completo (evita rutas extremadamente largas bajo `.venv` que en Windows suelen superar el límite clásico de 260 caracteres).
+
 ```powershell
 cd "C:\Users\bebes\Documents\MIAA\3. SEMESTRE\4. IA_GENERATIVA\unidad_2"
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 copy .env.example .env
 # Edita .env y coloca tu clave
-jupyter notebook notebooks\fase3_prompts_ecomarket.ipynb
 ```
 
-Alternativa sin Jupyter:
+Abre `notebooks\fase3_prompts_ecomarket.ipynb` en **Cursor**, selecciona el kernel **Python del `.venv`** (`.venv\Scripts\python.exe`) y ejecuta las celdas.
+
+Alternativa sin notebook:
 
 ```powershell
 python run_fase3.py
 ```
+
+### Si necesitas `jupyter notebook` en el navegador
+
+1. **Habilitar rutas largas en Windows** (PowerShell **como administrador**), luego reinicia:
+
+   ```powershell
+   New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
+     -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+   ```
+
+   Documentación: [pip — Enable long paths](https://pip.pypa.io/warnings/enable-long-paths).
+
+2. **Acortar la ruta del proyecto** (por ejemplo `C:\MIAA\u2\`) y volver a crear el `.venv` allí.
+
+3. Instalar: `pip install -r requirements-jupyter.txt` y usar `jupyter notebook` como antes.
+
+### Si `pip install` ya falló a medias
+
+Borra la carpeta `.venv`, aplica una de las soluciones anteriores y vuelve a crear el entorno e instalar.
 
 ## Repositorio remoto
 

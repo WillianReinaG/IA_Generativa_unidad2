@@ -1,0 +1,4 @@
+# Opcional: Jupyter en el navegador. En Windows puede fallar si no hay "Long Paths"
+# habilitado o si la ruta del proyecto es muy larga. Ver README (sección Windows).
+-r requirements.txt
+jupyter>=1.0.0
