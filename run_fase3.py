@@ -22,24 +22,29 @@ from ecomarket.prompts import build_devolucion_messages, build_pedido_messages
 
 
 def main() -> None:
-    print("=== (a) Estado de pedido — ejemplo básico ===\n")
-    msg_basic = 'Dame el estado del pedido ORD-12345.'
+    print("=== (a) Estado de pedido — cadena de prompts (ejemplo sin retraso) ===\n")
+    msg_basic = "Dame el estado de mi pedido y cuándo lo recibiré."
     out_a1 = get_chat_completion(
-        build_pedido_messages(order_id="ORD-12345", user_message=msg_basic)
+        build_pedido_messages(order_id="ORD-00001", user_message=msg_basic)
     )
     print(out_a1)
 
-    print("\n=== (a) Estado de pedido — ejemplo mejorado (retraso) ===\n")
+    print("\n=== (a) Estado de pedido — cadena de prompts (ejemplo con retraso) ===\n")
     msg_improved = (
-        "Actúa como un agente de servicio al cliente amable. "
-        "Proporciona el estado actual del pedido con el número de seguimiento indicado en los datos. "
-        "Incluye estimación de entrega y enlace de rastreo en tiempo real. "
-        "Si el pedido está retrasado, ofrece una disculpa y una breve explicación."
+        "Necesito el seguimiento, la fecha de entrega y el enlace para rastrear el paquete. "
+        "Si hay algún problema, explícamelo con claridad."
     )
     out_a2 = get_chat_completion(
-        build_pedido_messages(order_id="ORD-99999", user_message=msg_improved)
+        build_pedido_messages(order_id="ORD-00005", user_message=msg_improved)
     )
     print(out_a2)
+
+    print("\n=== (a) Pedidos por categoría (sin order_id) ===\n")
+    msg_cat = "Lista mis pedidos de esta categoría y señala si alguno va retrasado y por qué."
+    out_a3 = get_chat_completion(
+        build_pedido_messages(categoria="ropa", user_message=msg_cat)
+    )
+    print(out_a3)
 
     print("\n=== (b) Devolución — producto higiene (no usualmente retornable) ===\n")
     out_b1 = get_chat_completion(
