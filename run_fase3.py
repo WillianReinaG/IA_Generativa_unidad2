@@ -1,12 +1,21 @@
 """
 Ejecuta los prompts de la Fase 3 sin Jupyter (misma lógica que el notebook).
 
-Uso (desde la carpeta unidad_2):
-  set OPENAI_API_KEY=tu_clave
-  python run_fase3.py
+Carga automáticamente ``.env`` en la raíz de ``unidad_2`` si existe (variable
+``OPENAI_API_KEY``). También puedes definir la clave en la sesión:
+
+- PowerShell: ``$env:OPENAI_API_KEY = "sk-..."``
+- CMD: ``set OPENAI_API_KEY=sk-...``
 """
 
 from __future__ import annotations
+
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+_ROOT = Path(__file__).resolve().parent
+load_dotenv(_ROOT / ".env")
 
 from ecomarket.client import get_chat_completion
 from ecomarket.prompts import build_devolucion_messages, build_pedido_messages
