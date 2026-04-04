@@ -1,0 +1,29 @@
+{
+  "devolucion_permitida": [
+    "Electrónica sin abrir dentro de 30 días",
+    "Ropa con etiquetas y sin uso dentro de 15 días",
+    "Hogar y decoración en estado original dentro de 20 días"
+  ],
+  "no_devolucion": [
+    {
+      "categoria": "Productos perecederos",
+      "ejemplos": ["frutas", "verduras", "lácteos", "productos refrigerados"],
+      "motivo": "Por seguridad alimentaria y cadena de frío no admitimos devolución salvo defecto documentado el día de la entrega."
+    },
+    {
+      "categoria": "Productos de higiene personal",
+      "ejemplos": ["cepillos de dientes", "maquillaje abierto", "afeitadoras de uso personal"],
+      "motivo": "Por razones sanitarias no aceptamos devoluciones una vez abierto el embalaje, salvo defecto de fábrica."
+    },
+    {
+      "categoria": "Productos personalizados",
+      "ejemplos": ["grabados", "tallas bajo pedido"],
+      "motivo": "No son reembolsables salvo error de fabricación atribuible a EcoMarket."
+    }
+  ],
+  "pasos_generales": [
+    "Inicia la solicitud en tu cuenta > Mis pedidos > Devolver.",
+    "Empaqueta el producto con su factura o comprobante.",
+    "Adjunta la etiqueta de envío que te proporcionaremos por correo."
+  ]
+}

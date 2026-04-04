@@ -1,0 +1,22 @@
+{
+  "ORD-12345": {
+    "order_id": "ORD-12345",
+    "status": "En tránsito",
+    "tracking_number": "EMX-987654321",
+    "carrier": "EcoCourier",
+    "estimated_delivery": "2026-04-08",
+    "tracking_url": "https://track.ecomarket.example/rastreo/EMX-987654321",
+    "delayed": false,
+    "delay_reason": null
+  },
+  "ORD-99999": {
+    "order_id": "ORD-99999",
+    "status": "Retraso en la entrega",
+    "tracking_number": "EMX-111222333",
+    "carrier": "EcoCourier",
+    "estimated_delivery": "2026-04-12",
+    "tracking_url": "https://track.ecomarket.example/rastreo/EMX-111222333",
+    "delayed": true,
+    "delay_reason": "Alto volumen en el centro de clasificación regional"
+  }
+}
