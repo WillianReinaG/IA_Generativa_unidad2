@@ -1,5 +1,6 @@
 # Instalación mínima (recomendada en Windows con rutas largas).
 # Abre el .ipynb en Cursor/VS Code y elige el kernel del .venv tras instalar ipykernel.
-openai>=1.13.0,<2
+# La API Responses requiere un SDK reciente (client.responses.create).
+openai>=1.86.0,<2
 python-dotenv>=1.0.0
 ipykernel>=6.29.0

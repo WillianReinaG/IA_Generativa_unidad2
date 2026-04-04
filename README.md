@@ -16,7 +16,8 @@ Los datos de ejemplo están en `data/` (simulan catálogo/pedidos/políticas).
 ## Requisitos
 
 - Python 3.10+
-- Cuenta OpenAI y variable de entorno `OPENAI_API_KEY`
+- Cuenta OpenAI y variable de entorno `OPENAI_API_KEY` (nunca la subas al repositorio ni la pegues en el código)
+- Por defecto se usa la **API Responses** (`gpt-5-nano`). Si tu cuenta no la soporta, en `.env` pon `ECOMARKET_USE_RESPONSES_API=false` y se usará Chat Completions (`ECOMARKET_CHAT_FALLBACK_MODEL`, por defecto `gpt-4o-mini`).
 
 ### Instalación (recomendada en Windows)
 
