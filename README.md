@@ -10,8 +10,27 @@ Proyecto académico: **IA generativa para optimizar la atención al cliente** en
 | [FASE2_fortalezas_limitaciones_eticos.md](FASE2_fortalezas_limitaciones_eticos.md) | Fortalezas, limitaciones y riesgos éticos |
 | [notebooks/fase3_prompts_ecomarket.ipynb](notebooks/fase3_prompts_ecomarket.ipynb) | Ejecución de prompts (Fase 3) |
 | [run_fase3.py](run_fase3.py) | Misma lógica que el notebook, por terminal |
+| [ecomarket/routing.py](ecomarket/routing.py) | Clasificación primer nivel vs escalamiento (reflejo en código del diseño 80/20) |
+| [ecomarket/registro_escalamiento.py](ecomarket/registro_escalamiento.py) | Registro JSONL de escalamientos a humano (fecha, pedido, retraso) |
 
 Los datos de ejemplo están en `data/` (simulan catálogo/pedidos/políticas).
+
+### Registro de escalamientos a humano
+
+Cada vez que `armar_mensajes_atencion_pedido` toma la ruta de **escalamiento humano**, se añade una línea a **`data/registro_escalamientos_humanos.jsonl`** (formato [JSON Lines](https://jsonlines.org/)): `fecha_consulta` (UTC ISO), `numero_pedido` (parámetro o detectado como `ORD-#####` en el texto), `tiene_retraso` (`true` / `false` / `null` según `pedidos_ejemplo.json`), `motivo_clasificacion` y opcionalmente `categoria_consulta`. El archivo está en **`.gitignore`** para no subir datos locales al remoto. Otra ruta: variable de entorno `ECOMARKET_REGISTRO_ESCALAMIENTO`. Desactivar escritura: `armar_mensajes_atencion_pedido(..., registrar_escalamiento=False)`.
+
+## Fortalezas y limitaciones del modelo (resumen)
+
+El diseño del chat EcoMarket (Fase 3 + datos verificados) se apoya en un modelo **híbrido** (LLM + información de sistema). En términos de evaluación académica:
+
+| Enfoque | Qué cabe esperar |
+|--------|-------------------|
+| **Fortalezas** | **Menor tiempo de primera respuesta** frente a colas humanas; **disponibilidad 24/7**; capacidad de absorber un **alto porcentaje de consultas repetitivas** (orientativo **~80 %**: seguimiento de pedido, políticas con texto fijo), alineado con `build_pedido_messages` / `build_devolucion_messages` y los JSON en `data/`. |
+| **Limitaciones** | Un **~20 %** de casos **complejos** (reclamos graves, crisis, excepciones) sigue requiriendo **humano** con empatía y criterio; el modelo **no valida** la BD: si los datos son **erróneos o viejos**, puede **responder incorrectamente** aunque el texto suene coherente; persisten riesgos de **alucinación** si el contexto es pobre (mitigado en código con “solo datos verificados” y escalamiento). |
+
+**¿Dónde está el 80/20 en el código?** No como un porcentaje que el programa imprima en cada respuesta: es un **objetivo operativo** que en producción se contrasta con métricas. En este repo la separación “primer nivel vs humano” está implementada en **`ecomarket/routing.py`**: `clasificar_consulta_cliente` + `armar_mensajes_atencion_pedido` (escalamiento con `build_escalamiento_messages` frente a la cadena de `build_pedido_messages`). Ver también `run_fase3.py` (bloque “Enrutamiento 80/20”).
+
+El detalle argumentado, riesgos éticos y mitigaciones están en **[FASE2_fortalezas_limitaciones_eticos.md](FASE2_fortalezas_limitaciones_eticos.md)**.
 
 ## Requisitos
 

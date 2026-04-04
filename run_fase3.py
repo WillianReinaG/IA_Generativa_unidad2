@@ -19,6 +19,7 @@ load_dotenv(_ROOT / ".env")
 
 from ecomarket.client import get_chat_completion
 from ecomarket.prompts import build_devolucion_messages, build_pedido_messages
+from ecomarket.routing import RutaAtencion, armar_mensajes_atencion_pedido, clasificar_consulta_cliente
 
 
 def main() -> None:
@@ -45,6 +46,25 @@ def main() -> None:
         build_pedido_messages(categoria="ropa", user_message=msg_cat)
     )
     print(out_a3)
+
+    print("\n=== (a) Enrutamiento 80/20 (código): consulta que sugiere escalamiento humano ===\n")
+    msg_esc = (
+        "Quiero presentar una demanda judicial contra EcoMarket por mi último pedido; "
+        "necesito hablar con un supervisor o un humano."
+    )
+    ruta, motivo = clasificar_consulta_cliente(msg_esc)
+    print(f"clasificar_consulta_cliente → {ruta.value}" + (f" ({motivo})" if motivo else ""))
+    msgs_esc, ruta2, _ = armar_mensajes_atencion_pedido(
+        user_message=msg_esc,
+        order_id="ORD-00001",
+    )
+    assert ruta2 is RutaAtencion.ESCALAMIENTO_HUMANO_SUGERIDO
+    print(
+        "(Evento de escalamiento registrado en data/registro_escalamientos_humanos.jsonl "
+        "— ver README.)\n"
+    )
+    out_a4 = get_chat_completion(msgs_esc)
+    print(out_a4)
 
     print("\n=== (b) Devolución — producto higiene (no usualmente retornable) ===\n")
     out_b1 = get_chat_completion(
