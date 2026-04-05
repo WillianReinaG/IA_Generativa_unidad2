@@ -22,6 +22,7 @@ import unicodedata
 from enum import Enum
 from pathlib import Path
 
+from .estilos_prompt import componer_system_prompt_escalamiento
 from .prompts import build_pedido_messages
 from .registro_escalamiento import registrar_escalamiento_humano
 
@@ -89,26 +90,20 @@ def clasificar_consulta_cliente(user_message: str) -> tuple[RutaAtencion, str | 
     return RutaAtencion.PRIMER_NIVEL_AUTOMATIZABLE, None
 
 
-SYSTEM_ESCALAMIENTO_ECOMARKET = """Eres un agente de primera línea de EcoMarket (e-commerce).
-Esta conversación fue marcada para ESCALAMIENTO a un agente humano (caso sensible o fuera de autoresolución con datos simples).
-
-Reglas:
-- No inventes números de pedido, fechas, enlaces, teléfonos ni correos concretos.
-- No resuelvas reclamaciones legales, médicas ni conflictos graves: traslada con claridad a un especialista humano.
-- Sé breve, empático y profesional en español.
-- Ofrece que un agente continuará por el canal oficial de soporte (sin inventar datos de contacto).
-"""
-
-
-def build_escalamiento_messages(*, user_message: str) -> list[dict]:
-    """Cadena mínima para el ~20 %: respuesta de acogida y traslado, sin datos de pedido."""
+def build_escalamiento_messages(
+    *,
+    user_message: str,
+    estilos_path: Path | None = None,
+) -> list[dict]:
+    """Cadena mínima para el ~20 %: mismo TOML de estilos + bloque de escalamiento."""
+    system = componer_system_prompt_escalamiento(estilos_path=estilos_path)
     bloque = f"""[Contexto operativo]
 El sistema clasificó esta consulta como candidata a escalamiento humano (no usar flujo de pedido con JSON).
 
 [Consulta del cliente]
 {user_message.strip()}"""
     return [
-        {"role": "system", "content": SYSTEM_ESCALAMIENTO_ECOMARKET},
+        {"role": "system", "content": system},
         {"role": "user", "content": bloque},
     ]
 
@@ -122,6 +117,7 @@ def armar_mensajes_atencion_pedido(
     ignorar_clasificacion: bool = False,
     registrar_escalamiento: bool = True,
     registro_path: Path | None = None,
+    estilos_path: Path | None = None,
 ) -> tuple[list[dict], RutaAtencion, str | None]:
     """
     Punto único: o bien cadena de prompts de pedido, o bien escalamiento.
@@ -149,12 +145,17 @@ def armar_mensajes_atencion_pedido(
                     pedidos_path=base_pedidos if base_pedidos.is_file() else None,
                     registro_path=registro_path,
                 )
-            return build_escalamiento_messages(user_message=user_message), ruta, motivo
+            return (
+                build_escalamiento_messages(user_message=user_message, estilos_path=estilos_path),
+                ruta,
+                motivo,
+            )
 
     msgs = build_pedido_messages(
         user_message=user_message,
         order_id=order_id,
         categoria=categoria,
         pedidos_path=pedidos_path,
+        estilos_path=estilos_path,
     )
     return msgs, RutaAtencion.PRIMER_NIVEL_AUTOMATIZABLE, None

@@ -4,8 +4,9 @@ Cadena de prompts (atención por pedido o categoría)
 ==================================================
 ``build_pedido_messages`` arma varios mensajes de usuario consecutivos: (1) datos
 verificados, (2) reglas y **información base del retraso** si aplica, (3) rúbrica,
-(4) consulta del cliente. La consulta puede resolverse por ``order_id`` o, si no se
-indica pedido, por ``categoria`` (lista de pedidos de esa categoría en el JSON).
+(4) consulta del cliente. El **system** se arma desde ``config/prompt_estilos.toml``
+(rol general, contexto, estilo, quejas) vía ``estilos_prompt``. La consulta puede
+resolverse por ``order_id`` o por ``categoria``.
 """
 
 from __future__ import annotations
@@ -14,6 +15,12 @@ import json
 import unicodedata
 from pathlib import Path
 from typing import Any
+
+from .estilos_prompt import (
+    REGLAS_DATOS_CADENA_PEDIDO,
+    REGLAS_DATOS_DEVOLUCION,
+    componer_system_prompt_principal,
+)
 
 __all__ = [
     "build_pedido_messages",
@@ -28,20 +35,6 @@ PEDIDO_PROMPT_CHAIN_STEPS = (
     "paso_3_rubrica_calidad",
     "paso_4_consulta_cliente",
 )
-
-SYSTEM_ECOMARKET = """Eres un agente de atención al cliente de EcoMarket (e-commerce).
-Reglas obligatorias:
-- Usa SOLO la información factual proporcionada en los bloques de datos de la cadena de mensajes.
-- Si falta algún dato en esos bloques, dilo con claridad y ofrece escalar a un agente humano.
-- No inventes números de seguimiento, fechas, enlaces ni estados de pedido.
-- Tono profesional, amable y empático, en español.
-
-Sobre la cadena de mensajes que recibirás:
-- Varios mensajes de usuario consecutivos forman un flujo numerado (Paso 1…4).
-- Asimila el Paso 1 (hechos) y el Paso 2 (reglas según ese pedido) antes de redactar.
-- Tu respuesta final debe cumplir el Paso 3 y responder directamente al Paso 4 (la pregunta del cliente).
-"""
-
 
 def _load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -179,8 +172,13 @@ def build_pedido_messages(
     order_id: str | None = None,
     categoria: str | None = None,
     pedidos_path: Path | None = None,
+    estilos_path: Path | None = None,
 ) -> list[dict]:
-    """Arma la cadena de prompts: por ``order_id`` o, si no se pasa pedido, por ``categoria``."""
+    """Arma la cadena de prompts: por ``order_id`` o, si no se pasa pedido, por ``categoria``.
+
+    El mensaje de sistema se compone desde ``config/prompt_estilos.toml`` (cuatro estilos)
+    más reglas fijas de datos. Otra ruta: ``ECOMARKET_PROMPT_ESTILOS_TOML`` o ``estilos_path``.
+    """
     oid = (order_id or "").strip()
     cat = (categoria or "").strip()
     if not oid and not cat:
@@ -238,8 +236,12 @@ def build_pedido_messages(
 Consulta del cliente (responde solo a esto en tu mensaje de salida, cumpliendo los pasos anteriores):
 {user_message.strip()}"""
 
+    system = componer_system_prompt_principal(
+        reglas_datos=REGLAS_DATOS_CADENA_PEDIDO,
+        estilos_path=estilos_path,
+    )
     return [
-        {"role": "system", "content": SYSTEM_ECOMARKET},
+        {"role": "system", "content": system},
         {"role": "user", "content": paso_1},
         {"role": "user", "content": paso_2},
         {"role": "user", "content": paso_3},
@@ -253,8 +255,12 @@ def build_devolucion_messages(
     categoria: str,
     motivo: str,
     politica_path: Path | None = None,
+    estilos_path: Path | None = None,
 ) -> list[dict]:
-    """Prompt (b): guía de devolución diferenciando productos permitidos vs no permitidos."""
+    """Prompt (b): guía de devolución diferenciando productos permitidos vs no permitidos.
+
+    Usa los mismos estilos TOML que ``build_pedido_messages`` con reglas de datos para políticas.
+    """
     base = politica_path or Path(__file__).resolve().parent.parent / "data" / "politica_devoluciones.json"
     politica = _load_json(base)
     politica_txt = json.dumps(politica, ensure_ascii=False, indent=2)
@@ -274,7 +280,11 @@ Instrucciones:
 2) Explica los pasos generales solo si aplica; si no aplica, explica con empatía por qué no y qué alternativas existen (garantía por defecto, contacto con soporte el mismo día de entrega para perecederos, etc.).
 3) No inventes plazos ni condiciones que no estén en POLITICA_ECOMARKET; puedes usar lenguaje prudente ("según nuestras políticas habituales…") solo cuando el texto lo respalde.
 """
+    system = componer_system_prompt_principal(
+        reglas_datos=REGLAS_DATOS_DEVOLUCION,
+        estilos_path=estilos_path,
+    )
     return [
-        {"role": "system", "content": SYSTEM_ECOMARKET},
+        {"role": "system", "content": system},
         {"role": "user", "content": instruction.strip()},
     ]

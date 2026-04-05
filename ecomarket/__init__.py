@@ -3,6 +3,15 @@
 Para llamar al modelo: ``from ecomarket.client import get_chat_completion``.
 """
 
+from .estilos_prompt import (
+    DEFAULT_PROMPT_ESTILOS_PATH,
+    REGLAS_DATOS_CADENA_PEDIDO,
+    REGLAS_DATOS_DEVOLUCION,
+    cargar_estilos_prompt,
+    componer_system_prompt_escalamiento,
+    componer_system_prompt_principal,
+    resolver_ruta_estilos_toml,
+)
 from .prompts import (
     PEDIDO_PROMPT_CHAIN_STEPS,
     build_devolucion_messages,
@@ -24,6 +33,13 @@ from .routing import (
 )
 
 __all__ = [
+    "DEFAULT_PROMPT_ESTILOS_PATH",
+    "resolver_ruta_estilos_toml",
+    "cargar_estilos_prompt",
+    "componer_system_prompt_principal",
+    "componer_system_prompt_escalamiento",
+    "REGLAS_DATOS_CADENA_PEDIDO",
+    "REGLAS_DATOS_DEVOLUCION",
     "build_pedido_messages",
     "build_devolucion_messages",
     "PEDIDO_PROMPT_CHAIN_STEPS",

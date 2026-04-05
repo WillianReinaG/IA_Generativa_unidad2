@@ -12,8 +12,13 @@ Proyecto académico: **IA generativa para optimizar la atención al cliente** en
 | [run_fase3.py](run_fase3.py) | Misma lógica que el notebook, por terminal |
 | [ecomarket/routing.py](ecomarket/routing.py) | Clasificación primer nivel vs escalamiento (reflejo en código del diseño 80/20) |
 | [ecomarket/registro_escalamiento.py](ecomarket/registro_escalamiento.py) | Registro JSONL de escalamientos a humano (fecha, pedido, retraso) |
+| [config/prompt_estilos.toml](config/prompt_estilos.toml) | Cuatro estilos de prompt (rol, contexto, tono, quejas) leídos al ejecutar |
 
 Los datos de ejemplo están en `data/` (simulan catálogo/pedidos/políticas).
+
+### Estilos de prompt (TOML)
+
+El mensaje de **sistema** que recibe el modelo se compone desde **`config/prompt_estilos.toml`**: `rol_general`, `contexto_especifico`, `estilo_respuesta`, `manejo_quejas`, más reglas fijas de datos en código (`ecomarket/estilos_prompt.py`). Afecta a pedidos, devoluciones y escalamiento. Otra ruta: variable de entorno **`ECOMARKET_PROMPT_ESTILOS_TOML`**. En Python 3.10 hace falta el paquete **`tomli`** (`pip install -r requirements.txt`).
 
 ### Registro de escalamientos a humano
 
