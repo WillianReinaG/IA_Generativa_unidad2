@@ -10,6 +10,7 @@ Proyecto académico: **IA generativa para optimizar la atención al cliente** en
 | [FASE2_fortalezas_limitaciones_eticos.md](FASE2_fortalezas_limitaciones_eticos.md) | Fortalezas, limitaciones y riesgos éticos |
 | [notebooks/fase3_prompts_ecomarket.ipynb](notebooks/fase3_prompts_ecomarket.ipynb) | Ejecución de prompts (Fase 3) |
 | [run_fase3.py](run_fase3.py) | Misma lógica que el notebook, por terminal |
+| [chat_web.py](chat_web.py) | Chat en el navegador (Streamlit), sin editar código |
 | [ecomarket/routing.py](ecomarket/routing.py) | Clasificación primer nivel vs escalamiento (reflejo en código del diseño 80/20) |
 | [ecomarket/registro_escalamiento.py](ecomarket/registro_escalamiento.py) | Registro JSONL de escalamientos a humano (fecha, pedido, retraso) |
 | [config/prompt_estilos.toml](config/prompt_estilos.toml) | Cuatro estilos de prompt (rol, contexto, tono, quejas) leídos al ejecutar |
@@ -45,7 +46,7 @@ El detalle argumentado, riesgos éticos y mitigaciones están en **[FASE2_fortal
 
 ### Instalación (recomendada en Windows)
 
-El archivo `requirements.txt` instala solo lo necesario para el **notebook en Cursor/VS Code** y para `run_fase3.py`, sin el metapaquete `jupyter` completo (evita rutas extremadamente largas bajo `.venv` que en Windows suelen superar el límite clásico de 260 caracteres).
+El archivo `requirements.txt` incluye el **notebook** en Cursor/VS Code, `run_fase3.py`, **Streamlit** (`chat_web.py`) y `ipykernel`, sin el metapaquete `jupyter` completo (evita rutas extremadamente largas bajo `.venv` que en Windows suelen superar el límite clásico de 260 caracteres).
 
 ```powershell
 cd "C:\Users\bebes\Documents\MIAA\3. SEMESTRE\4. IA_GENERATIVA\unidad_2"
@@ -64,6 +65,16 @@ Alternativa sin notebook:
 ```powershell
 python run_fase3.py
 ```
+
+### Chat web (Streamlit)
+
+Interfaz en el navegador: eliges tipo de consulta y datos en la barra lateral y escribes en el chat (sin tocar código Python).
+
+```powershell
+streamlit run chat_web.py
+```
+
+Se abre una URL local (por defecto `http://localhost:8501`). Requiere `OPENAI_API_KEY` en `.env`.
 
 ### Si necesitas `jupyter notebook` en el navegador
 
